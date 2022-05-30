@@ -20,7 +20,7 @@ import attr
 import typing
 from motion_imitation.robots import robot_config
 
-
+# attr可以实现对类的简化编写
 @attr.s
 class SimulationParameters(object):
   """Parameters specific for the pyBullet simulation."""
