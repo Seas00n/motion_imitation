@@ -105,22 +105,23 @@ def build_imitation_env(motion_files, num_parallel_envs, mode,
         sensor_wrappers.HistoricSensorWrapper(
             wrapped_sensor=environment_sensors.LastActionSensor(num_actions=laikago.NUM_MOTORS), num_history=3)
     ]
-    # 模仿任务初始化
+    # 模仿任务初始化（规定reward是怎么计算的）
     task = imitation_task.ImitationTask(ref_motion_filenames=motion_files,
                                         enable_cycle_sync=True,
                                         tar_frame_steps=[1, 2, 10, 30],
                                         ref_state_init_prob=0.9,
                                         warmup_time=0.25)
-
+    # 初始化随机
     randomizers = []
     if enable_randomizer:
         randomizer = controllable_env_randomizer_from_config.ControllableEnvRandomizerFromConfig(verbose=False)
         randomizers.append(randomizer)
-
+    # 初始化Gym强化学习环境
     env = locomotion_gym_env.LocomotionGymEnv(gym_config=gym_config, robot_class=robot_class,
                                               env_randomizers=randomizers, robot_sensors=sensors, task=task)
-
     env = observation_dictionary_to_array_wrapper.ObservationDictionaryToArrayWrapper(env)
+    # 轨迹生成器初始化
+    trajectory_generator = simple_openloop.LaikagoPoseOffsetGenerator(action_limit=laikago.UPPER_BOUND)
     env = trajectory_generator_wrapper_env.TrajectoryGeneratorWrapperEnv(env,
                                                                          trajectory_generator=trajectory_generator)
 

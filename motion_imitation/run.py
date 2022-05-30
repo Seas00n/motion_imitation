@@ -82,7 +82,7 @@ def build_model(env, num_procs, timesteps_per_actorbatch, optim_batchsize, outpu
         verbose=1)
     return model
 
-
+# 训练模型
 def train(model, env, total_timesteps, output_dir="", int_save_freq=0):
     if (output_dir == ""):
         save_path = None
@@ -165,16 +165,17 @@ def main():
                                           mode=args.mode,
                                           enable_randomizer=enable_env_rand,
                                           enable_rendering=args.visualize)
-
+    # 建立初始模型
     model = build_model(env=env,
                         num_procs=num_procs,
                         timesteps_per_actorbatch=TIMESTEPS_PER_ACTORBATCH,
                         optim_batchsize=OPTIM_BATCHSIZE,
                         output_dir=args.output_dir)
 
+    # 根据需求看是否要加载模型新参数
     if args.model_file != "":
         model.load_parameters(args.model_file)
-
+    # 训练模型或测试模型
     if args.mode == "train":
         train(model=model,
               env=env,
